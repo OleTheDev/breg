@@ -12,7 +12,9 @@ interface ModalProps {
 
 export default function Modal(props: ModalProps) {
   const { isOpen, title, children, onClose, onAction, onActionText } = props;
-  const portal = document.getElementById("portal")!;
+
+  const portal = document.getElementById("portal");
+  if (!portal) throw new Error("Mangler #portal i DOM");
 
   if (!isOpen) return null;
 
