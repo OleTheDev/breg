@@ -46,24 +46,27 @@ export default function SearchResult(props: SearchDataProps) {
     });
   };
 
-    return (
-        <>
-        <Modal 
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(!isModalOpen)}
-            onAction={() => visitWebsite()}
-            onActionText='Åpne Nettside'
-            title={modalTitle}
-            children={
-                <div className="mt-5">
-                    {isKonkurs ? 
-                    <span className="font-semibold text-lg text-red-600">Firmaet er konkurs</span>
-                    : 
-                    <span className="font-semibold text-lg text-green-600">Firmaet er ikke konkurs</span>
-                    }
-                </div>
-            }
-        />
+  return (
+    <>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(!isModalOpen)}
+        onAction={() => visitWebsite()}
+        onActionText="Åpne Nettside"
+        title={modalTitle}
+      >
+        <div className="mt-5">
+          {isKonkurs ? (
+            <span className="font-semibold text-lg text-red-600">
+              Firmaet er konkurs
+            </span>
+          ) : (
+            <span className="font-semibold text-lg text-green-600">
+              Firmaet er ikke konkurs
+            </span>
+          )}
+        </div>
+      </Modal>
 
       <div className="flex-wrap flex-col rounded overflow-hidden shadow-md">
         {data.map((x: ISearchResult) => (
