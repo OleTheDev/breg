@@ -1,69 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import SearchResult from "./searchResult";
+import { useBrregSearch } from "../hooks/useBrregSearch";
 
 export default function SearchBar() {
-  const [companiesData, setCompaniesData] = useState([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      if (search == "") {
-        setCompaniesData([]);
-        return;
-      }
-      if (search.length < 2) return;
-
-      setIsLoading(true);
-
-      // Hvis man myser litt på denne koden så ser man at en del av koden ca gjentas
-      // Det er alltid en god ting å prøve å rydde litt i slik kode så den blir enklere å forholde seg til.
-      axios
-        .get(
-          `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${search}`
-        )
-        .then((response) => {
-          console.log(response.data);
-          const data = response.data._embedded.enheter;
-          setCompaniesData(data);
-          setIsLoading(false);
-        })
-        .catch((e) => {
-          // - Bruk en try/catch og en `Cannot read properties of undefined` feil for å styre programflyten er litt for utydelig.
-          //   - En bedre løsning kan være å sjekke searchOrgNr først, og så velge hvilket API man skal søke på på bakgrunn av det.
-          const searchOrgNr = Number(search);
-          if (!searchOrgNr) {
-            setCompaniesData([]);
-            setIsLoading(false);
-            return;
-          }
-
-          if (searchOrgNr.toString().length < 9) {
-            setCompaniesData([]);
-            setIsLoading(false);
-            return;
-          }
-
-          axios
-            .get(
-              `https://data.brreg.no/enhetsregisteret/api/enheter?organisasjonsnummer=${searchOrgNr}`
-            )
-            .then((response) => {
-              const data = response.data._embedded.enheter;
-              setCompaniesData(data);
-              setIsLoading(false);
-            })
-            .catch((error) => {
-              console.log(error);
-              setCompaniesData([]);
-              setIsLoading(false);
-            });
-        });
-    })();
-  }, [search]);
+  const { result, loading } = useBrregSearch({ query: search });
 
   return (
     <>
@@ -77,7 +20,7 @@ export default function SearchBar() {
         />
       </div>
       <div className="m-10">
-        {isLoading ? (
+        {loading ? (
           <div className="justify-center items-center text-center">
             <FontAwesomeIcon
               icon={faSpinner}
@@ -85,7 +28,7 @@ export default function SearchBar() {
             />
           </div>
         ) : (
-          <SearchResult data={companiesData} />
+          <SearchResult data={result} />
         )}
       </div>
     </>
