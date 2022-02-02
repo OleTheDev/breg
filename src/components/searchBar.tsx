@@ -19,6 +19,8 @@ export default function SearchBar() {
 
       setIsLoading(true);
 
+      // Hvis man myser litt på denne koden så ser man at en del av koden ca gjentas
+      // Det er alltid en god ting å prøve å rydde litt i slik kode så den blir enklere å forholde seg til.
       axios
         .get(
           `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${search}`
@@ -30,7 +32,8 @@ export default function SearchBar() {
           setIsLoading(false);
         })
         .catch((e) => {
-          console.log("catch", e);
+          // - Bruk en try/catch og en `Cannot read properties of undefined` feil for å styre programflyten er litt for utydelig.
+          //   - En bedre løsning kan være å sjekke searchOrgNr først, og så velge hvilket API man skal søke på på bakgrunn av det.
           const searchOrgNr = Number(search);
           if (!searchOrgNr) {
             setCompaniesData([]);

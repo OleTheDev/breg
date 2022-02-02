@@ -18,6 +18,8 @@ interface SearchDataProps {
 export default function SearchResult(props: SearchDataProps) {
   const { data } = props;
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  // Disse egenskapene konkurrerer ved første øyekast mot idéen om å bare ha én useState for valg firma å vise i modalen.
   const [firmaNettside, setFirmaNettside] = useState<string>("");
   const [isKonkurs, setIsKonkurs] = useState<boolean>(false);
   const [modalTitle, setModalTitle] = useState<string>("");
@@ -35,6 +37,14 @@ export default function SearchResult(props: SearchDataProps) {
   };
 
   const OpenModal = (orgnr: string) => {
+    /**
+     * Bruk av map her forteller feil historie. Når jeg ser map tenker jeg at vi skal ta array-et,
+     * gjøre noe med hver verdi og returnere et nytt array. Det gjør vi ikke her. En forEach, eller kanskje en find
+     * kunne passet bedre.
+     *
+     * Jeg legger også merke til at koden under som kaller på denne "OpenModal(x.organisasjonsnummer)" alt besitter x, hvor x er
+     * et ISearchResult som vi i koden under søker etter.
+     */
     data.map((x: ISearchResult) => {
       if (x.organisasjonsnummer === orgnr) {
         setFirmaNettside(x.hjemmeside);
