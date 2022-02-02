@@ -4,7 +4,7 @@ export interface singleCompanyInterface {
   organisasjonsnummer: string;
   navn: string;
   organisasjonsform: Organisasjonsform;
-  hjemmeside: string;
+  hjemmeside?: string;
   registreringsdatoEnhetsregisteret: Date;
   registrertIMvaregisteret: boolean;
   naeringskode1: InstitusjonellSektorkode;

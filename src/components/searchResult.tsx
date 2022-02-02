@@ -23,11 +23,8 @@ export default function SearchResult(props: SearchDataProps) {
       alert("Mangler nettside!");
       return;
     }
-    if (!hjemmeside.includes("http")) {
-      window.open(`https://${hjemmeside}`);
-    } else {
-      window.open(hjemmeside);
-    }
+
+    window.open(hjemmeside);
   };
 
   return (

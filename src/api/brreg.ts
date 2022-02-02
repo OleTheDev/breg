@@ -5,7 +5,7 @@ export interface SearchBrregResult {
   navn: string;
   beskrivelse: string;
   organisasjonsnummer: string;
-  hjemmeside: string;
+  hjemmeside?: string;
   konkurs: boolean;
   stiftelsesdato: Date;
 
@@ -18,7 +18,7 @@ export interface SearchBrregResult {
 const client = axios.create({
   baseURL: "https://data.brreg.no/enhetsregisteret/api/",
   headers: {
-    accepts: "application/json",
+    accept: "application/json",
   },
 });
 
@@ -42,8 +42,12 @@ export async function searchBrreg({
     params: { [searchBy]: query },
   });
 
-  return enheter.map((enhet) => ({
+  return enheter.map(({ hjemmeside, ...enhet }) => ({
     ...enhet,
     beskrivelse: enhet.institusjonellSektorkode?.beskrivelse ?? "",
+    hjemmeside:
+      hjemmeside && !hjemmeside.includes("http")
+        ? `https://${hjemmeside}`
+        : hjemmeside,
   }));
 }
