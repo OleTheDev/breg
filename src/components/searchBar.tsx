@@ -85,9 +85,7 @@ export default function SearchBar() {
             />
           </div>
         ) : (
-          <>
-            <SearchResult data={companiesData} />
-          </>
+          <SearchResult data={companiesData} />
         )}
       </div>
     </>
