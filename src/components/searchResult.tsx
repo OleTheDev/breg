@@ -1,85 +1,77 @@
-import { useState } from 'react';
-import Moment from 'moment';
-import Modal from './modal';
-
-interface ISearchResult {
-    navn: string,
-    organisasjonsnummer: string
-    registreringsdatoEnhetsregisteret: string
-    hjemmeside: string
-    stiftelsesdato: string
-    konkurs: boolean
-}
+import React, { useState } from "react";
+import Moment from "moment";
+import Modal from "./modal";
+import { SearchBrregResult } from "../api/brreg";
 
 interface SearchDataProps {
-    data: Array<ISearchResult>
+  data: SearchBrregResult[];
 }
 
 export default function SearchResult(props: SearchDataProps) {
-    const {data} = props;
-    const [isModalOpen,setIsModalOpen] = useState<boolean>(false);
-    const [firmaNettside,setFirmaNettside] = useState<string>('');
-    const [isKonkurs,setIsKonkurs] = useState<boolean>(false);
-    const [modalTitle,setModalTitle] = useState<string>('');
+  const { data } = props;
 
-    const visitWebsite = () => {
-        if (!firmaNettside) {
-            alert("Mangler nettside!");
-            return;
-        }
-        if (!firmaNettside.includes("http")) {
-            window.open(`https://${firmaNettside}`);
-        } else {
-            window.open(firmaNettside);
-        }
+  const [showInModal, setShowInModal] = useState<SearchBrregResult | null>(
+    null
+  );
+
+  const visitWebsite = () => {
+    if (!showInModal) return;
+
+    const { hjemmeside } = showInModal;
+
+    if (!hjemmeside) {
+      alert("Mangler nettside!");
+      return;
     }
 
-    const OpenModal = (orgnr: string) => {
-        data.map((x:ISearchResult) => {
-            if (x.organisasjonsnummer === orgnr) {
-                setFirmaNettside(x.hjemmeside)
-                setIsKonkurs(x.konkurs);
-                setModalTitle(`Firma Informasjon for ${x.navn}`)
-                setIsModalOpen(true);
-                return;
-            }
-        })
-    }
+    window.open(hjemmeside);
+  };
 
-    return (
-        <>
-        <Modal 
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(!isModalOpen)}
-            onAction={() => visitWebsite()}
-            onActionText='Åpne Nettside'
-            title={modalTitle}
-            children={
-                <div className="mt-5">
-                    {isKonkurs ? 
-                    <span className="font-semibold text-lg text-red-600">Firmaet er konkurs</span>
-                    : 
-                    <span className="font-semibold text-lg text-green-600">Firmaet er ikke konkurs</span>
-                    }
-                </div>
-            }
-        />
-
-        <div className="flex-wrap flex-col rounded overflow-hidden shadow-md">
-            {data.map((x: ISearchResult) =>
-                <div key={x.organisasjonsnummer} className="focus:bg-gray-300 my-5 hover:bg-gray-300 cursor-pointer active:bg-gray-400" onClick={() => OpenModal(x.organisasjonsnummer)}>
-                    <span className="font-medium">
-                        {x.navn}
-                    </span>
-                    <div className="text-sm font-normal text-gray-500 tracking-wide">Org.nr: {x.organisasjonsnummer}</div>
-
-                    {x.stiftelsesdato != "" &&
-                        <div className="text-sm font-normal text-gray-500 tracking-wide">Stiftelsesdato: {Moment(x.stiftelsesdato).format('DD.MM.yyyy')}</div>    
-                    }
-                    <div className="text-sm font-normal text-gray-500 tracking-wide">{x.hjemmeside}</div>
-                </div>
-            )}
+  return (
+    <>
+      <Modal
+        isOpen={!!showInModal}
+        onClose={() => setShowInModal(null)}
+        onAction={() => visitWebsite()}
+        onActionText="Åpne Nettside"
+        title={`Firma Informasjon for ${showInModal?.navn}`}
+      >
+        <div className="mt-5">
+          {showInModal?.konkurs ? (
+            <span className="font-semibold text-lg text-red-600">
+              Firmaet er konkurs
+            </span>
+          ) : (
+            <span className="font-semibold text-lg text-green-600">
+              Firmaet er ikke konkurs
+            </span>
+          )}
         </div>
-        </>
-    );
+      </Modal>
+
+      <div className="flex-wrap flex-col rounded overflow-hidden shadow-md">
+        {data.map((x) => (
+          <div
+            key={x.organisasjonsnummer}
+            className="focus:bg-gray-300 my-5 hover:bg-gray-300 cursor-pointer active:bg-gray-400"
+            onClick={() => setShowInModal(x)}
+          >
+            <span className="font-medium">{x.navn}</span>
+            <div className="text-sm font-normal text-gray-500 tracking-wide">
+              Org.nr: {x.organisasjonsnummer}
+            </div>
+
+            {x.stiftelsesdato && (
+              <div className="text-sm font-normal text-gray-500 tracking-wide">
+                Stiftelsesdato: {Moment(x.stiftelsesdato).format("DD.MM.yyyy")}
+              </div>
+            )}
+            <div className="text-sm font-normal text-gray-500 tracking-wide">
+              {x.hjemmeside}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 }
